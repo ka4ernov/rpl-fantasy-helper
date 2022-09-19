@@ -14,8 +14,8 @@ class RplFantasyService {
         const options = {
             method: 'GET',
             headers: {
-                'X-RapidAPI-Key': 'e684dcb1a9msh5c11db4a6510681p1b5862jsn86e0c0308d64',
-                'X-RapidAPI-Host': 'pinnacle-odds.p.rapidapi.com'
+                'X-RapidAPI-Key': process.env.REACT_APP_RAPID_API_KEY,
+                'X-RapidAPI-Host': process.env.REACT_APP_RAPID_API_HOST
             }
         };
 
