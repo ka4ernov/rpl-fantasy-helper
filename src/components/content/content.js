@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 
 import RplFantasyService from '../../services/rpl-fantasy-service';
 
@@ -15,28 +15,23 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 import './content.css';
 
-class Content extends Component {
-
-  state = {
-    matches: []
+const Content = () => {
+  const [matches, setMatches] = useState([]);
+  
+  const rplFantasyService = new RplFantasyService();
+  
+  function onLoadMatches() {
+    rplFantasyService.getAllMatches()
+      .then(onMatchesLoaded)
+      .catch()
   }
 
-  rplFantasyService = new RplFantasyService();
+  function onMatchesLoaded(newMatches) {
+    setMatches(() => [...matches, ...newMatches])
+  }
 
-  onLoadMatches = () => {
-    this.rplFantasyService.getAllMatches()
-        .then(this.onMatchesLoaded)
-        .catch();
-  };
-
-  onMatchesLoaded = (newMatches) => {
-    this.setState(({matches}) => ({
-        matches: [...matches, ...newMatches],
-    }))
-  };
-
-  renderItems(arr) {
-    const items =  arr.map((item) => {
+  function renderItems(arr) {
+    const items =  arr.map((item, i) => {
       const listGroup = {
         backgroundColor: '#3f3f3f', 
         color: 'white', 
@@ -55,13 +50,17 @@ class Content extends Component {
       let nameAway;
       if (item.home.includes('PFK') || item.home.includes('PFC')) {
         nameHome = item.home.slice(4);
+      } else {
+        nameHome = item.home;
       };
       if (item.away.includes('PFK') || item.away.includes('PFC')) {
         nameAway = item.away.slice(4);
+      } else {
+        nameAway = item.away;
       };
       return (
-        <Card style={{...listGroup, ...cardStyle}}>
-          <ListGroup>
+        <Card key={i} style={{...listGroup, ...cardStyle}}>
+          <ListGroup >
               <ListGroup.Item style={listGroup}>
                   <span>{nameHome}</span>
                   <span>{item.winHome}</span>
@@ -99,79 +98,77 @@ class Content extends Component {
     });
     
     return (
-        <ul className="char__grid">
-            {items}
-        </ul>
+      <Col>
+        {items}
+      </Col>
     )
   }
 
-  render() {
-    const {matches} = this.state;
-    const items = this.renderItems(matches);
+  const items = renderItems(matches);
 
-    return (
-      <Container className='rpl-content mt-5'>
-        
-        <Row className='mt-4'>
-          <Col>
+  return (
+    
+    <Container className='rpl-content mt-5'>
+      <Row className='mt-4'>
+        <Col>
           <Stack direction="horizontal" gap={3}>
             <NextTour/>
             <Button 
             variant="outline-success" 
             size="lg"
             className='fs-2 fw-bold mt-5'
-            onClick={this.onLoadMatches}>
+            onClick={() => onLoadMatches()}>
             Загрузить данные
             </Button>
           </Stack>
-          </Col>
-        </Row>
-  
-        <Row className='mt-5 gx-5'>
-          <Col>
-            {items}
-          </Col>
-          {/* <Col>
-            <MatchCards/>
-          </Col> */}
-        </Row>
-          
-        {/* <Row className='mt-5 gx-5'>
-          <Col>
-            <MatchCards/>
-          </Col>
-          <Col>
-            <MatchCards/>
-          </Col>
-        </Row>
-  
-        <Row className='mt-5 gx-5'>
-          <Col>
-            <MatchCards/>
-          </Col>
-          <Col>
-            <MatchCards/>
-          </Col>
-        </Row>
-  
-        <Row className='mt-5 gx-5'>
-          <Col>
-            <MatchCards/>
-          </Col>
-          <Col>
-            <MatchCards/>
-          </Col>
-        </Row> */}
-  
-        <Row>
-          <Col>
-            <Favs/>
-          </Col>
-        </Row>
-  
-      </Container>
-    )
-  }
+        </Col>
+      </Row>
+
+      <Row className='mt-5 gx-5'>
+        {/* <Col> */}
+          {items}
+        {/* </Col> */}
+        {/* <Col>
+          {items[1]}
+        </Col>
+      </Row>
+        
+      <Row className='mt-5 gx-5'>
+        <Col>
+          {items[2]}
+        </Col>
+        <Col>
+          {items[3]}
+        </Col>
+      </Row>
+
+      <Row className='mt-5 gx-5'>
+        <Col>
+          {items[4]}
+        </Col>
+        <Col>
+          {items[5]}
+        </Col>
+      </Row>
+
+      <Row className='mt-5 gx-5'>
+        <Col>
+          {items[6]}
+        </Col>
+        <Col>
+          {items[7]}
+        </Col> */}
+      </Row>
+
+      <Row>
+        <Col>
+          <Favs/>
+        </Col>
+      </Row>
+
+  </Container>
+    
+  )
 }
 
 export default Content;
