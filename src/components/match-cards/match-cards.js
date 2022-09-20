@@ -5,7 +5,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 import './match-cards.css';
 
-const MatchCards = () => {
+const MatchCards = ({home, away}) => {
     const listGroup = {
         backgroundColor: '#3f3f3f', 
         color: 'white', 
@@ -25,11 +25,11 @@ const MatchCards = () => {
         <Card style={{...listGroup, ...cardStyle}}>
             <ListGroup>
                 <ListGroup.Item style={listGroup}>
-                    <span>Локомотив</span>
+                    <span>{home}</span>
                     <span>2,70</span>
                     <span>3,4</span>
                     <span>1,70</span>
-                    <span>Зенит</span>
+                    <span>{away}</span>
                 </ListGroup.Item>
 
                 <ListGroup.Item style={listGroup}>

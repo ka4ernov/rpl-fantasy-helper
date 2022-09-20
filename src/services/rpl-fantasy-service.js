@@ -19,8 +19,18 @@ class RplFantasyService {
             }
         };
 
-        const res = await this.getResource('https://pinnacle-odds.p.rapidapi.com/kit/v1/markets?sport_id=1&event_type=prematch&league_ids=2406&is_have_odds=true', options);
-        return res;
+        const res = await this.getResource(process.env.REACT_APP_RAPID_API_LINK_TEST, options);
+        return res.events.map(this._transformMatchData);
+    }
+
+    _transformMatchData = (match) => {
+        return {
+            home: match.home,
+            away: match.away,
+            winHome: match.periods.num_0.money_line.home,
+            winAway: match.periods.num_0.money_line.away,
+            draw: match.periods.num_0.money_line.draw,
+        }
     }
 }
 
