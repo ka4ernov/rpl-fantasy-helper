@@ -70,15 +70,15 @@ const Content = () => {
               </ListGroup.Item>
 
               <ListGroup.Item style={listGroup}>
-                  <span>2,4</span>
+                  <span>{item.scoreHome}</span>
                   <span>Забьют</span>
-                  <span>2,70</span>
+                  <span>{item.scoreAway}</span>
               </ListGroup.Item>
 
               <ListGroup.Item style={listGroup}>
-                  <span>2,4</span>
+                  <span>{item.noScoreHome}</span>
                   <span>Не забьют</span>
-                  <span>2,70</span>
+                  <span>{item.noScoreAway}</span>
               </ListGroup.Item>
 
               <ListGroup.Item style={listGroup}>
@@ -94,13 +94,21 @@ const Content = () => {
               </ListGroup.Item>
           </ListGroup>
         </Card>
+        
       )
     });
     
+    const ulStyle = {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 200px)',
+      columnGap: '400px',
+      rowGap: '30px',
+    }
+
     return (
-      <Col>
+      <ul style={{...ulStyle}}>
         {items}
-      </Col>
+      </ul>
     )
   }
 
@@ -125,39 +133,7 @@ const Content = () => {
       </Row>
 
       <Row className='mt-5 gx-5'>
-        {/* <Col> */}
           {items}
-        {/* </Col> */}
-        {/* <Col>
-          {items[1]}
-        </Col>
-      </Row>
-        
-      <Row className='mt-5 gx-5'>
-        <Col>
-          {items[2]}
-        </Col>
-        <Col>
-          {items[3]}
-        </Col>
-      </Row>
-
-      <Row className='mt-5 gx-5'>
-        <Col>
-          {items[4]}
-        </Col>
-        <Col>
-          {items[5]}
-        </Col>
-      </Row>
-
-      <Row className='mt-5 gx-5'>
-        <Col>
-          {items[6]}
-        </Col>
-        <Col>
-          {items[7]}
-        </Col> */}
       </Row>
 
       <Row>
@@ -165,7 +141,6 @@ const Content = () => {
           <Favs/>
         </Col>
       </Row>
-
   </Container>
     
   )
