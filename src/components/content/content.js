@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
 
 import RplFantasyService from '../../services/rpl-fantasy-service';
+import TeamsNames from '../../services/team-names';
 
 import NextTour from '../next-tour/next-tour';
 import Favs from '../favs/favs';
+import MatchCards from '../match-cards/match-cards';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -17,8 +19,10 @@ import './content.css';
 
 const Content = () => {
   const [matches, setMatches] = useState([]);
+  const [odds, setOdds] = useState(null);
   
   const rplFantasyService = new RplFantasyService();
+  const teamsNames = new TeamsNames();
   
   function onLoadMatches() {
     rplFantasyService.getAllMatches()
@@ -27,7 +31,20 @@ const Content = () => {
   }
 
   function onMatchesLoaded(newMatches) {
-    setMatches(() => [...matches, ...newMatches])
+    setMatches(() => [...matches, ...newMatches]);
+  }
+
+  const onSelectedMatch = (id) => {
+    rplFantasyService.getOdds(id)
+      .then(onOddsLoaded)
+      .catch()
+    console.log(id);
+  }
+
+  const onOddsLoaded = (newOdds) => {
+    setOdds(newOdds);
+    console.log(newOdds);
+    console.log(odds);
   }
 
   function renderItems(arr) {
@@ -40,45 +57,47 @@ const Content = () => {
         borderColor: 'white'
       };
       const cardStyle = {
-          width: '45rem', 
+          width: '50rem', 
           fontSize: '2rem', 
           backgroundColor: '#3f3f3f', 
           marginBottom: '20px',
           marginLeft: '120px',
       };
+      
       let nameHome;
+      nameHome = teamsNames.changeTeamsNames(item.home, nameHome);
       let nameAway;
-      if (item.home.includes('PFK') || item.home.includes('PFC')) {
-        nameHome = item.home.slice(4);
-      } else {
-        nameHome = item.home;
-      };
-      if (item.away.includes('PFK') || item.away.includes('PFC')) {
-        nameAway = item.away.slice(4);
-      } else {
-        nameAway = item.away;
-      };
+      nameAway = teamsNames.changeTeamsNames(item.away, nameAway);
+
       return (
         <Card key={i} style={{...listGroup, ...cardStyle}}>
           <ListGroup >
+              <ListGroup.Item 
+              style={listGroup}
+              onClick={() => onSelectedMatch(item.idMatch)}
+              >
+                  <img src={item.logoHome} alt={`логотип ${nameHome}`} style={{width: "35px", height: "35px"}}/>
+                  <span style={{fontWeight: 'bold'}}>{nameHome}</span>
+                  <span style={{fontWeight: 'bold'}}>{nameAway}</span>
+                  <img src={item.logoAway} alt={`логотип ${nameAway}`} style={{width: "35px", height: "35px"}}/>
+              </ListGroup.Item>
+              {/* <MatchCards matches={matches}/> */}
               <ListGroup.Item style={listGroup}>
-                  <span>{nameHome}</span>
-                  <span>{item.winHome}</span>
-                  <span>{item.draw}</span>
-                  <span>{item.winAway}</span>
-                  <span>{nameAway}</span>
+                  <span>П1 <span style={{marginLeft: '15px'}}>{odds.homeWin}</span></span>
+                  <span>Н <span style={{marginLeft: '15px'}}>{odds.draw}</span></span>
+                  <span>П2 <span style={{marginLeft: '15px'}}>{odds.awayWin}</span></span>
               </ListGroup.Item>
 
               <ListGroup.Item style={listGroup}>
-                  <span>{item.scoreHome}</span>
+                  <span>1</span>
                   <span>Забьют</span>
-                  <span>{item.scoreAway}</span>
+                  <span>2</span>
               </ListGroup.Item>
 
               <ListGroup.Item style={listGroup}>
-                  <span>{item.noScoreHome}</span>
+                  <span>1</span>
                   <span>Не забьют</span>
-                  <span>{item.noScoreAway}</span>
+                  <span>2</span>
               </ListGroup.Item>
 
               <ListGroup.Item style={listGroup}>
@@ -88,13 +107,20 @@ const Content = () => {
               </ListGroup.Item>
 
               <ListGroup.Item style={listGroup}>
-                  <span>вннвп</span>
+                  <span>нвнпв</span>
                   <span>Форма</span>
-                  <span>вннвп</span>
+                  <span>нвнпв</span>
               </ListGroup.Item>
+              <Button
+              variant="outline-success" 
+              size="sm"
+              className='fs-2 fw-bold'
+              onClick={() => onSelectedMatch(item.idMatch)}
+              >
+              Загрузить кэффы
+              </Button>
           </ListGroup>
         </Card>
-        
       )
     });
     
@@ -102,7 +128,7 @@ const Content = () => {
       display: 'grid',
       gridTemplateColumns: 'repeat(2, 200px)',
       columnGap: '400px',
-      rowGap: '30px',
+      rowGap: '35px',
     }
 
     return (
@@ -126,8 +152,9 @@ const Content = () => {
             size="lg"
             className='fs-2 fw-bold mt-5'
             onClick={() => onLoadMatches()}>
-            Загрузить данные
+            Загрузить команды
             </Button>
+
           </Stack>
         </Col>
       </Row>

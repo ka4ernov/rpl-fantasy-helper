@@ -11,30 +11,52 @@ class RplFantasyService {
     }
 
     getAllMatches = async () => {
+        const myHeaders = new Headers();
+        myHeaders.append("x-rapidapi-key", process.env.REACT_APP_RAPID_API_KEY);
+        myHeaders.append("x-rapidapi-host", process.env.REACT_APP_RAPID_API_HOST);
+        
         const options = {
             method: 'GET',
-            headers: {
-                'X-RapidAPI-Key': process.env.REACT_APP_RAPID_API_KEY,
-                'X-RapidAPI-Host': process.env.REACT_APP_RAPID_API_HOST
-            }
+            headers: myHeaders,
+            redirect: 'follow'
         };
 
-        const res = await this.getResource('https://pinnacle-odds.p.rapidapi.com/kit/v1/markets?sport_id=1&event_type=prematch&league_ids=2686&is_have_odds=true', options);
-        return res.events.map(this._transformMatchData);
+        const res = await this.getResource("https://v3.football.api-sports.io/fixtures?league=235&season=2022&from=2022-10-14&to=2022-10-16", options);
+        return res.response.map(this._transformMatchData);
+    }
+
+    getOdds = async (id) => {
+        const myHeaders = new Headers();
+        myHeaders.append("x-rapidapi-key", process.env.REACT_APP_RAPID_API_KEY);
+        myHeaders.append("x-rapidapi-host", process.env.REACT_APP_RAPID_API_HOST);
+        
+        const options = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow',
+        };
+
+        const res = await this.getResource(`https://v3.football.api-sports.io/odds?league=235&season=2022&fixture=${id}&bookmaker=2`, options);
+        return this._transformOddsData(res.response[0]);
     }
 
     _transformMatchData = (match) => {
         return {
-            eventId: match.event_id,
-            home: match.home,
-            away: match.away,
-            winHome: match.periods.num_0.money_line.home,
-            winAway: match.periods.num_0.money_line.away,
-            draw: match.periods.num_0.money_line.draw,
-            scoreHome: match.periods.num_0.team_total.home.over,
-            scoreAway: match.periods.num_0.team_total.away.over,
-            noScoreHome: match.periods.num_0.team_total.home.under,
-            noScoreAway: match.periods.num_0.team_total.away.under,
+            home: match.teams.home.name,
+            away: match.teams.away.name,
+            logoHome: match.teams.home.logo,
+            logoAway: match.teams.away.logo,
+            idHome: match.teams.home.id,
+            idAway: match.teams.away.id,
+            idMatch: match.fixture.id
+        }
+    }
+
+    _transformOddsData = (odds) => {
+        return {
+            homeWin: odds.bookmakers[0].bets[0].values[0].odd,
+            draw: odds.bookmakers[0].bets[0].values[1].odd,
+            awayWin: odds.bookmakers[0].bets[0].values[2].odd,
         }
     }
 }
